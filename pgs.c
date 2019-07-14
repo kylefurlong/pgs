@@ -53,29 +53,34 @@ uint64_t pgs() {
 #include <stdio.h>
 #include <assert.h>
 
-void is_mixed_or_die(uint64_t seed) {
-    const size_t ge = 23;
-    assert(__builtin_clzl(seed << 10) < ge);
-    assert(__builtin_clzl(seed << 20) < ge);
-    assert(__builtin_clzl(seed << 30) < ge);
-    assert(__builtin_clzl(seed << 40) < ge);
-}
-
 int main() {
-    const size_t run = 200000;
+    const size_t run = 100000;
     struct timespec ts;
 
     uint64_t* seeds = (uint64_t*)malloc(run*(sizeof(uint64_t)));
 
     for (int i = 0; i < run; i++) {
         seeds[i] = pgs();
-        is_mixed_or_die(seeds[i]);
         if (i % 25 == 0) printf("%06d 0x%08llx\n", i, seeds[i]);
         for (int k = 0; k < i; k++) {
             if (seeds[k] == seeds[i]) {
                 printf("0x%08llx (%d == %d)\n", seeds[k], k, i);
-                exit(1);
+                assert(seeds[k] != seeds[i]); // Uniqueness error
             }
         }
     }
+
+    uint64_t tz = 0;
+    for (int i = 0; i < run; i++) {
+        uint64_t s = seeds[i];
+
+        for (int k = 0; k < 64; k++) {
+            tz += __builtin_ctzl(s >> k);
+        }
+    }
+
+    tz = tz / run;
+
+    printf("\navg tz: %llu\n\n", tz);
+    assert(tz > 59 && tz < 69); // Mix error
 }
