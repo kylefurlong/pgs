@@ -143,7 +143,7 @@ void test() {
     setbuf(stdout, NULL);
     printf("\n");
 
-    for (int i = 3; i > 0; i--) {
+    for (int i = 2; i > 0; i--) {
         printf("\r%d", i);
         sleep(1); // Let clocks run so we ensure no bias in run length
     }
