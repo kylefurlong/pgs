@@ -1,0 +1,6 @@
+FROM centos:6.8
+RUN yum -y groupinstall 'Development Tools'
+RUN mkdir /test
+COPY .  /test
+WORKDIR /test
+CMD ["/test/test.sh"]

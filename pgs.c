@@ -15,15 +15,18 @@
 //  limitations under the License.
 //
 
+#include <inttypes.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 #include <unistd.h>
 
 static uint64_t _pgsX = 0x7e86a8c1936a6c28;
 static uint64_t _pgsA = 0xac87c8c81d99fcf5;
+static uint64_t _pgsM = UINT64_MAX / 2;
 
 uint64_t pgs() {
-    uint64_t sW = time(0) & 0xFF;
+    uint64_t sW = _pgsM + (time(0) & 0xFF);
     sW = (sW << 0L) | (sW << 8L) |
          (sW << 16) | (sW << 24) |
          (sW << 32) | (sW << 40) |
@@ -35,7 +38,7 @@ uint64_t pgs() {
     sS =  sH << 32 | (sS & 0xFFFFFFFF);
     sS ^= sW; free((void*)sH);
 
-    uint64_t sC = clock() & 0xFF;
+    uint64_t sC = _pgsM + (clock() & 0xFF);
     sC = (sC << 0L) | (sC << 8L) |
          (sC << 16) | (sC << 24) |
          (sC << 32) | (sC << 40) |
@@ -55,32 +58,64 @@ uint64_t pgs() {
 
 int main() {
     const size_t run = 100000;
-    struct timespec ts;
-
     uint64_t* seeds = (uint64_t*)malloc(run*(sizeof(uint64_t)));
 
-    for (int i = 0; i < run; i++) {
+    setbuf(stdout, NULL);
+
+    for (int i = 5; i > 0; i--) {
+        printf("\r%d", i);
+        sleep(1); // Let clocks run so we ensure no bias in run length
+    }
+    printf("\r%s\n", " ");
+
+    for (int i = 0; i <= run; i++) {
         seeds[i] = pgs();
-        if (i % 25 == 0) printf("%06d 0x%08llx\n", i, seeds[i]);
+        if (i % 25 == 0) printf("\r%06d 0x%08jx", i, (uintmax_t)seeds[i]);
+        if (i % 20000 == 0) puts("");
         for (int k = 0; k < i; k++) {
             if (seeds[k] == seeds[i]) {
-                printf("0x%08llx (%d == %d)\n", seeds[k], k, i);
+                printf("0x%08jx (%d == %d)\n", (uintmax_t)seeds[k], k, i);
                 assert(seeds[k] != seeds[i]); // Uniqueness error
             }
         }
     }
 
-    uint64_t tz = 0;
+    puts("");
+
+    uint64_t* times = (uint64_t*)malloc(run*(sizeof(uint64_t)));
+
+#ifdef CLOCK_PROCESS_CPUTIME_ID
+
+    struct timespec ts;
+    for (int i = 0; i < run; i++) {
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
+        uint64_t start = ts.tv_nsec;
+        seeds[i] = pgs();
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
+        times[i] = ts.tv_nsec - start;
+    }
+
+    int ns = 0;
+    for (int i = 0; i < run; i++) {
+        ns += times[i];
+    }
+    ns = ns / run;
+
+    printf("avg ns: %d\n", ns);
+    assert(ns < 2000); // Slow clocks, YMMV
+
+#endif
+
+    int tz = 0;
     for (int i = 0; i < run; i++) {
         uint64_t s = seeds[i];
 
-        for (int k = 0; k < 64; k++) {
+        for (int k = 0; k < 62; k++) {
             tz += __builtin_ctzl(s >> k);
         }
     }
-
     tz = tz / run;
 
-    printf("\navg tz: %llu\n\n", tz);
-    assert(tz > 59 && tz < 69); // Mix error
+    printf("avg tz: %d\n\n", tz);
+    assert(tz > 44 && tz < 84); // Mix error
 }
