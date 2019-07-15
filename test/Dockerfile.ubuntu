@@ -4,4 +4,4 @@ RUN apt-get install -y build-essential
 RUN mkdir /test
 COPY .  /test
 WORKDIR /test
-CMD ["/test/test.sh"]
+CMD ["/test/run.sh"]

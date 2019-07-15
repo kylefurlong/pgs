@@ -3,4 +3,4 @@ RUN yum -y groupinstall 'Development Tools'
 RUN mkdir /test
 COPY .  /test
 WORKDIR /test
-CMD ["/test/test.sh"]
+CMD ["/test/run.sh"]
