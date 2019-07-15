@@ -32,10 +32,8 @@ uint64_t pgs() {
          (sC << 48) | (sC << 56) ;
 
     uint64_t sS = ((uint64_t)&sC >> 9) & 0xFFFF;
-    sS = (sS << 0L) | (sS << 8L) |
-         (sS << 16) | (sS << 24) |
-         (sS << 32) | (sS << 40) |
-         (sS << 48) | (sS << 56) ;
+    sS = (sS << 0L) | (sS << 16) |
+         (sS << 32) | (sS << 48) ;
 
     size_t iM = ((sS >> (cL & 0x3F)) & 0x3) | 0x1;
     while (iM--) { // Foil timing attacks
