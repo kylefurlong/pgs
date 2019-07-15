@@ -1,8 +1,7 @@
 # pgs
 A random seed for platforms without a robust entropy source
 
-Sample test on macOS: ns is nanoseconds/seed; tz is for i in 63 { tz += ctzl(seed >> i) }
-Please check the test folder for a full bench run
+Sample test on macOS: `ns` is `nanoseconds/seed`; `tz` is `for i in 63 { tz += ctzl(seed >> i) }`
 
     Darwin Tantalus.local 18.6.0 Darwin Kernel Version 18.6.0: Thu Apr 25 23:16:27 PDT 2019; root:xnu-4903.261.4~2/RELEASE_X86_64 x86_64
 
