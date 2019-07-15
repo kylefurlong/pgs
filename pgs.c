@@ -36,8 +36,8 @@ uint64_t pgs() {
     sS  = sS << 32 | (sS & 0xFFFFFFFF);
 
     size_t iM = ((sS >> (cL & 0x3F)) & 0x3) | 0x1;
-    for (int i = 0; i < iM; i++) {
-        __asm__ ("nop"); // Foil timing attacks
+    while (iM--) { // Foil timing attacks
+        __asm__ ("nop");
     }
 
     sS ^= sC;
