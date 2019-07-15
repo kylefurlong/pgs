@@ -1,6 +1,7 @@
 #!/bin/sh
 platforms=(centos alpine ubuntu)
 
+cp ../pgs.c ./
 for platform in ${platforms[*]}; do
     docker build -t pgs:$platform -f Dockerfile.$platform . 1>/dev/null
 done
