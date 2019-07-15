@@ -89,10 +89,10 @@ int main() {
     struct timespec ts;
     for (int i = 0; i < run; i++) {
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
-        uint64_t start = ts.tv_nsec;
+        uint64_t start = (ts.tv_sec * 1000000000) + ts.tv_nsec;
         seeds[i] = pgs();
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
-        times[i] = ts.tv_nsec - start;
+        times[i] = (ts.tv_sec * 1000000000) + ts.tv_nsec - start;
     }
 
     int ns = 0;
