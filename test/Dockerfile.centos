@@ -3,4 +3,4 @@ RUN yum -y groupinstall 'Development Tools'
 RUN mkdir /test
 COPY .  /test
 WORKDIR /test
-CMD ["/test/run.sh"]
+CMD /test/run.sh "-DNDEBUG -DPGS_TEST_BATCHES=1000"

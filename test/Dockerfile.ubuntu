@@ -4,4 +4,4 @@ RUN apt-get install -y build-essential
 RUN mkdir /test
 COPY .  /test
 WORKDIR /test
-CMD ["/test/run.sh"]
+CMD /test/run.sh "-DNDEBUG -DPGS_TEST_BATCHES=1000"

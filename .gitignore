@@ -1,1 +1,4 @@
 test/pgs.c
+test/splitmix64
+test/bytes
+test/bytesXoshiro

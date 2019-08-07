@@ -16,33 +16,27 @@
 //
 
 #include <stdint.h>
-#include <unistd.h>
 
 static uint64_t _pgsX = 0x7e86a8c1936a6c28;
-static uint64_t _pgsA = 0xa8c7ca831d99fbf5;
+
+static inline uint64_t rotl(uint64_t x, uint16_t r) {
+    return (x << r) | (x >> (64 - r));
+}
 
 uint64_t pgs() {
     uint32_t cL, cH;
     __asm__ __volatile__ ("rdtsc" : "=a" (cL), "=d" (cH));
 
-    uint64_t sC = cL & 0xFF;
-    sC = (sC << 0L) | (sC << 8L) |
-         (sC << 16) | (sC << 24) |
-         (sC << 32) | (sC << 40) |
-         (sC << 48) | (sC << 56) ;
+    uint64_t sC = (cL >> 2) & 0xFFFF;
+    sC = (sC << 0L) | (sC << 16) |
+         (sC << 32) | (sC << 48) ;
 
-    uint64_t sS = ((uint64_t)&sC >> 9) & 0xFFFF;
-    sS = (sS << 0L) | (sS << 16) |
-         (sS << 32) | (sS << 48) ;
-
-    size_t iM = ((sS >> (cL & 0x3F)) & 0x3) | 0x1;
-    while (iM--) { // Foil timing attacks
+    uint32_t iM = (cL & 0x3) | 0x1;
+    while(iM--) {
         __asm__ ("nop");
     }
 
-    sS ^= sC;
+    _pgsX = rotl((_pgsX ^ sC) * 5, 7) * 9;
 
-    _pgsX ^= sS;
-
-    return _pgsX ^ _pgsA++;
+    return _pgsX;
 }

@@ -5,6 +5,6 @@
 #include <assert.h>
 
 int main() {
-    printf("\nTesting pgs%s", "");
-    test();
+    printf("\nTesting pgs %s", "🔬");
+    return test();
 }
