@@ -32,7 +32,7 @@ uint64_t pgs() {
          (sC << 32) | (sC << 48) ;
 
     uint32_t iM = (cL & 0x3) | 0x1;
-    while(iM--) {
+    while (iM--) {
         __asm__ ("nop");
     }
 
