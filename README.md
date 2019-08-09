@@ -6,10 +6,6 @@ Thanks to Walter Bright for the clean rdtsc asm, and for his long years of servi
 
 ### Benchmarking
 
-pgs passes PractRand, ENT, and homebrew tests mostly on the strength of **. One starts to think of pgs as a xoshiro style generator where the state space is dynamically sized to the entropy basis of the cycle counter, at the added latency cost of the cycle counter itself. Not being an academic themself, the author does not make any attempt to calculate the period of pgs as generator
-
-Practically speaking, pgs provides a replacement to urandom and rdrand either on systems where these are not supported, or where their throughput, latency, or soundness does not meet a certain project's requirements. Note that on recent Intel, pgs outperforms rdrand by an order of magnitude. Comparisons with most urandom implementations are similarly favorable, only to a lesser degree
-
 #### Homebrew
 
 Testing pgs 🔬
